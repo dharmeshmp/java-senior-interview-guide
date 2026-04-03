@@ -1,74 +1,41 @@
-# 06 - Multithreading & Concurrency
+# 06 - Advanced Concurrency & Multi-threading
 
-Multithreading is a programming model that allows multiple threads to run concurrently within a single process.
-
----
-
-## 🏗 Developing Threads
-Threads can be created in two ways:
-1. Extending the `Thread` class.
-2. Implementing the `Runnable` interface (Recommended).
-
-### 🖇 Extending Thread Class
-```java
-class MyThread extends Thread {
-    public void run() {
-        System.out.println("Thread is running!");
-    }
-}
-MyThread mt = new MyThread();
-mt.start();
-```
-
-### 🖇 Implementing Runnable Interface
-Using `Runnable` is better for flexibility since a class can implement multiple interfaces.
-```java
-class MyRunnable implements Runnable {
-    public void run() {
-        System.out.println("Runnable is running!");
-    }
-}
-Thread t = new Thread(new MyRunnable());
-t.start();
-```
-
-## 🧩 Multithreaded Synchronization
-Use `synchronized` to allow only one thread to access a resource at a time. This prevents data corruption.
-
-```java
-public class Counter {
-    private int count = 0;
-
-    public synchronized void increment() {
-        count++;
-    }
-
-    public int getCount() {
-        return count;
-    }
-}
-```
-
-## 🚦 Thread Life Cycle
-- **New**: Thread instance created.
-- **Runnable**: `start()` called.
-- **Running**: Code in `run()` is executing.
-- **Waiting/Blocked/Timed-waiting**: Waiting for another thread or sleep.
-- **Terminated/Dead**: Thread execution finishes.
-
-## ♾ Executors Framework
-The `ExecutorService` provides a way to manage higher-level thread execution.
-
-```java
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-ExecutorService executor = Executors.newFixedThreadPool(5);
-executor.execute(() -> {
-    System.out.println("Asynchronous task running in executor.");
-});
-executor.shutdown();
-```
+Concurrency is heavily tested in senior interviews. You must understand atomicity, visibility, and modern concurrent APIs.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+
+## 🏗 Java Memory Model (JMM)
+JMM dictates how threads interact through memory.
+- **Visibility**: If Thread A writes a variable, Thread B might only see a cached CPU register version. Use `volatile` to force reads/writes directly to main memory.
+- **Atomicity**: Increments (`i++`) are read-modify-write operations and are NOT atomic. Use `AtomicInteger` (which uses CAS - Compare And Swap instruction at the hardware level).
+- **Happens-Before**: A guarantee that the results of one operation are visible to a subsequent operation (e.g., `unlock` on a monitor happens-before a `lock` on the same monitor).
+
+## 🏗 Executors & CompletableFuture
+Managing raw `Thread` objects is discouraged.
+- **ExecutorService**: Thread pools (`FixedThreadPool`, `CachedThreadPool`).
+- **CompletableFuture (Java 8)**: The foundation of modern async programming in Java. Allows chaining non-blocking callbacks.
+
+```java
+CompletableFuture.supplyAsync(() -> fetchUserData())
+                 .thenApply(user -> processUser(user))
+                 .thenAccept(result -> System.out.println(result))
+                 .exceptionally(ex -> { log.error(ex); return null; });
+```
+
+## 🏗 ThreadLocal
+Provides thread-local variables. Each thread has its own isolated instance.
+- **Risk**: Highly prone to memory leaks in web servers (like Tomcat). If the thread goes back to the pool without `ThreadLocal.remove()`, the object is never garbage collected.
+
+## 🏗 Virtual Threads (Project Loom - Java 21)
+Heavyweight OS threads limit the "One-Thread-Per-Request" model.
+- **Virtual Threads** are lightweight threads managed by the JVM, not the OS.
+- Millions can run simultaneously. They "unmount" from the carrier OS thread during blocking I/O.
+- Usage: `Executors.newVirtualThreadPerTaskExecutor()`.
+
+### Interview Question
+*What is a Deadlock and how do you prevent it?*
+Deadlock occurs when two or more threads hold locks and wait for locks held by others, forming a dependency cycle.
+**Prevention**: Always acquire locks in a consistent global order across all threads. Use timeouts (`tryLock(time)` from `ReentrantLock`).
+
+---
+[⬅ Back to Interview Roadmap](../README.md)

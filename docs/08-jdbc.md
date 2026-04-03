@@ -1,67 +1,35 @@
-# 08 - JDBC (Java Database Connectivity)
+# 08 - Database Interactions & Transactions
 
-JDBC is the Java API that connects to and interacts with relational databases using SQL.
-
----
-
-## 🏗 Key Components of JDBC
-- **DriverManager**: Manages the JDBC driver.
-- **Connection**: Creates a session with the database.
-- **Statement**: Executes a static SQL query.
-- **PreparedStatement**: For parameterized SQL queries.
-- **ResultSet**: Represents the database result set.
-
-### 🖇 Basic Connection Setup
-```java
-import java.sql.*;
-
-public class DatabaseAccess {
-    public static void main(String[] args) {
-        String url = "jdbc:mysql://localhost:3306/mydb";
-        String username = "root";
-        String password = "password";
-
-        try {
-            Connection con = DriverManager.getConnection(url, username, password);
-            System.out.println("Connection successful!");
-            con.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-## 🏗 Execute Queries
-Executing a `SELECT` statement and iterating over the result.
-
-```java
-public void executeSelect() throws SQLException {
-    String sql = "SELECT * FROM users";
-    Statement st = con.createStatement();
-    ResultSet rs = st.executeQuery(sql);
-
-    while (rs.next()) {
-        System.out.println(rs.getInt(1) + " " + rs.getString(2));
-    }
-    rs.close();
-    st.close();
-}
-```
-
-## 🏎 PreparedStatements
-For security and performance, always use `PreparedStatement` to avoid SQL Injection.
-
-```java
-public void executeInsert(int id, String name) throws SQLException {
-    String query = "INSERT INTO users(id, name) VALUES(?, ?)";
-    PreparedStatement ps = con.prepareStatement(query);
-    ps.setInt(1, id);
-    ps.setString(2, name);
-    ps.executeUpdate();
-    ps.close();
-}
-```
+Senior backend engineers design data access layers to be highly concurrent, performant, and failure-resistant.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+
+## 🏗 Connection Pooling Internals (HikariCP)
+Opening a TCP connection to a DB is incredibly slow. Connection pools maintain persistent connections.
+- **HikariCP**: The default in Spring Boot. It's aggressively optimized down to the bytecode level using custom concurrent data structures (`FastList`, lock-free programming).
+- **Tuning**: Pool size should not be massive. Formula: `connections = ((core_count * 2) + effective_spindle_count)`. A pool of 10-20 is often optimal for typical workloads.
+
+## 🏗 Transaction Isolation Levels
+Understanding how different transactions see data concurrently.
+1. **READ_UNCOMMITTED**: Dirty Reads allowed (reading uncommitted data).
+2. **READ_COMMITTED**: Prevents Dirty Reads. (Postgres Default).
+3. **REPEATABLE_READ**: Prevents Non-Repeatable reads. (MySQL InnoDB Default).
+4. **SERIALIZABLE**: Highest level, strictly sequential. Prevents Phantom Reads but causes high lock contention.
+
+## 🏗 Spring `@Transactional` Internals
+Spring creates a CGLIB or JDK Proxy around your bean.
+- **Self-Invocation Problem**: Calling a `@Transactional` method from another method *within the same class* bypassing the proxy, meaning the transaction is ignored.
+- **Rollback Rule**: By default, it only rolls back on unchecked exceptions (`RuntimeException`). You must specify `rollbackFor = Exception.class` for checked exceptions.
+
+## 🏗 Propagation Behaviors
+- `REQUIRED` (Default): Join existing tx, or create new.
+- `REQUIRES_NEW`: Suspend current tx, create a brand new independent tx.
+- `SUPPORTS`: Execute within tx if one exists, otherwise execute non-transactionally.
+
+### Interview Question
+*Explain the "N+1 Queries" problem and how to solve it in JPA.*
+The N+1 problem occurs when querying a list of entities (1 query) and then iterating over them to fetch lazily loaded associations (N queries).
+**Fix**: Use `JOIN FETCH` (JPQL) or `EntityGraphs` so the data is fetched eagerly in a single query.
+
+---
+[⬅ Back to Interview Roadmap](../README.md)

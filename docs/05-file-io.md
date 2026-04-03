@@ -1,82 +1,42 @@
-# 05 - File Input & Output (I/O)
+# 05 - NIO & High-Performance I/O
 
-Java's File I/O (InputStream/OutputStream) and FileReader/FileWriter provide ways to read and write from/to external files.
-
----
-
-## 🏗 Basics of File Handling
-The `File` class allows manipulation of files and directories.
-
-```java
-import java.io.File;
-
-File file = new File("example.txt");
-if (file.exists()) {
-    System.out.println("File exists!");
-} else {
-    file.createNewFile(); // Requires try-catch
-}
-```
-
-## 🏗 FileWriter & FileReader
-Writing and reading text character by character.
-
-```java
-import java.io.FileWriter;
-import java.io.FileReader;
-
-// Writing to a file
-FileWriter fw = new FileWriter("example.txt");
-fw.write("Hello, Java File I/O!");
-fw.close(); // Don't forget to close!
-
-// Reading from a file
-FileReader fr = new FileReader("example.txt");
-int ch;
-while ((ch = fr.read()) != -1) {
-    System.out.print((char) ch);
-}
-fr.close();
-```
-
-## 🏎 Efficient Buffered Writing/Reading
-Using `BufferedWriter` and `BufferedReader` for better performance.
-```java
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-
-// Writing with a Buffer
-BufferedWriter bw = new BufferedWriter(new FileWriter("example.txt"));
-bw.write("Line 1 with buffering!");
-bw.newLine();
-bw.write("Line 2 with buffering!");
-bw.close();
-
-// Reading with a Buffer
-BufferedReader br = new BufferedReader(new FileReader("example.txt"));
-String line;
-while ((line = br.readLine()) != null) {
-    System.out.println(line);
-}
-br.close();
-```
-
-## 🖇 Serialization & Deserialization
-Process of converting an object state into a byte stream and vice versa.
-
-```java
-import java.io.*;
-
-class User implements Serializable {
-    String name;
-    transient int password; // Won't be serialized
-}
-
-// Byte writing
-ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("user.ser"));
-out.writeObject(new User());
-out.close();
-```
+For high-throughput systems (like web servers, trading algorithms), traditional blocking I/O (`java.io`) becomes a bottleneck.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+
+## 🏗 Java IO vs NIO
+- **Standard I/O (`java.io`)**: Stream-oriented, Blocking APIs. A thread sits idle waiting for disk/network reads.
+- **Java NIO (`java.nio`)**: Buffer-oriented, Non-Blocking APIs. A single thread can manage thousands of connections via Selectors.
+
+### Core Concepts of NIO
+1. **Buffers**: Data is read into a buffer and written from a buffer (e.g., `ByteBuffer`).
+2. **Channels**: A bi-directional pathway (e.g., `FileChannel`, `SocketChannel`).
+3. **Selectors**: A multiplexor. A single thread checks the Selector, which tracks multiple Channels to see which ones are ready for reading/writing.
+
+## 🏗 ByteBuffer Internals
+A `ByteBuffer` has three critical properties:
+- `capacity`: Total size.
+- `position`: Current read/write index.
+- `limit`: The boundary.
+**Important**: You must call `flip()` to switch a buffer from write mode to read mode.
+
+## 🏗 Memory-Mapped Files (Zero Copy)
+For extreme performance, use `MappedByteBuffer`.
+- It maps the file directly into the OS's virtual memory space.
+- Bypasses the JVM Heap entirely (reducing GC load).
+- Perfect for reading/writing very large files (like Kafka logs or databases).
+
+```java
+try (FileChannel channel = FileChannel.open(path, StandardOpenOption.READ)) {
+    // Map a 1GB file directly to memory
+    MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
+    // ... read directly from buffer extremely fast
+}
+```
+
+### Interview Question
+*What is "Zero-Copy" in Java Networking?*
+Zero-Copy (`FileChannel.transferTo()`) allows transferring data from disk to the network socket directly via the OS kernel space, bypassing the JVM application memory (user space). This saves CPU cycles and memory bandwidth.
+
+---
+[⬅ Back to Interview Roadmap](../README.md)

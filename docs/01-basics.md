@@ -1,96 +1,39 @@
-# 01 - Java Basics
+# 01 - JVM Internals & Memory Management
 
-This section covers the fundamental building blocks of Java programming.
-
----
-
-## 🏗 Java Syntax
-Every Java program starts with a `class`. The entry point of an application is the `main` method.
-
-```java
-public class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-
-## 📦 Variables & Data Types
-Java is a statically-typed language, meaning all variables must be declared before use.
-
-### 🧩 Primitive Data Types
-| Data Type | Size (bits) | Default Value | Example Value |
-| :--- | :--- | :--- | :--- |
-| `byte` | 8 | 0 | `100` |
-| `short` | 16 | 0 | `30000` |
-| `int` | 32 | 0 | `2000000000` |
-| `long` | 64 | 0L | `10000000000L` |
-| `float` | 32 | 0.0f | `5.75f` |
-| `double` | 64 | 0.0d | `19.99` |
-| `boolean`| 1 | false | `true` |
-| `char` | 16 | '\u0000' | `'A'` |
-
-### 🖇 Reference Types
-Reference types include **Strings**, **Arrays**, and **Objects**.
-```java
-String greeting = "Hello, Java!";
-int[] numbers = {1, 2, 3, 4, 5};
-```
-
-## 🛤 Control Flow
-### ⚖ If-Else Statement
-```java
-int score = 85;
-if (score >= 90) {
-    System.out.println("Grade A");
-} else if (score >= 80) {
-    System.out.println("Grade B");
-} else {
-    System.out.println("Grade C");
-}
-```
-
-### 🔄 Switch Statement
-```java
-int day = 3;
-switch (day) {
-    case 1: System.out.println("Monday"); break;
-    case 2: System.out.println("Tuesday"); break;
-    case 3: System.out.println("Wednesday"); break;
-    default: System.out.println("Another day");
-}
-```
-
-## ♾ Loops
-### 🔁 For Loop
-```java
-for (int i = 1; i <= 5; i++) {
-    System.out.println("Iteration: " + i);
-}
-```
-
-### 🔁 While Loop
-```java
-int count = 1;
-while (count <= 5) {
-    System.out.println("Count: " + count);
-    count++;
-}
-```
-
-## 🔢 Arrays
-An array is a collection of similar types of data.
-```java
-// 1D Array
-int[] arr = new int[5];
-arr[0] = 10;
-
-// 2D Array
-int[][] matrix = {
-    {1, 2, 3},
-    {4, 5, 6}
-};
-```
+For a developer with 5-10 years of experience, understanding "how" Java works under the hood is critical. You must be prepared to discuss memory leaks, GC pauses, and performance tuning.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+
+## 🏗 JVM Architecture Deep Dive
+### ClassHolders and Delegation
+- **Bootstrap Classloader**: Loads core Java API classes (`rt.jar`).
+- **Extension Classloader**: Loads extension directories.
+- **Application Classloader**: Loads your application's classpath.
+- **Interview Question**: *How do you resolve `ClassNotFoundException` vs `NoClassDefFoundError`?*
+  - **Answer**: `ClassNotFoundException` occurs at runtime when using `Class.forName()`, `loadClass()`, etc. `NoClassDefFoundError` occurs if a class was present during compile-time but missing during runtime (often a static initialization failure).
+
+### Memory Regions
+- **Heap**: Shared memory where objects live. Divided into Young Gen (Eden, S0, S1) and Old Gen.
+- **Metaspace**: Removed PermGen in Java 8. Stores class metadata, static variables, and constants. Grows automatically, using native memory.
+- **Stack**: Thread-specific. Stores local primitives and object references.
+- **PC Register & Native Method Stack**: Tracks instruction addresses for native code.
+
+## 🗑 Garbage Collection (GC) Internals
+### Algorithms
+1.  **G1GC (Garbage First)**: Default in Java 9+. Partitions heap into regions. Good balance of throughput and low pause times. Uses concurrent marking.
+2.  **ZGC / Shenandoah**: Ultra-low latency GCs (often < 1ms pauses) by doing compaction concurrently. Good for huge heaps (terabytes).
+
+### Tuning & Troubleshooting
+- **Interview Question**: *A production app is experiencing high CPU and "Stop-The-World" pauses. How do you troubleshoot?*
+  - **Answer**: 
+    1. Check GC logs (e.g., `-Xlog:gc`). See if Full GCs are happening frequently.
+    2. Take a Heap Dump (`jmap`) and analyze in Eclipse MAT to find memory leaks.
+    3. Look for large object allocations (triggering Humongous Allocations in G1GC).
+    4. Consider tuning parameters: `-Xms` and `-Xmx` (set them equal to avoid resizing overhead), `-XX:MaxGCPauseMillis`.
+
+## ⚙ JIT Compilation & Escape Analysis
+- **JIT**: Translates heavily used bytecode ("hot spots") into native machine code at runtime.
+- **Escape Analysis**: Optimization where the JIT compiler analyzes if an object is only used within a method (doesn't "escape"). If so, it might allocate the object on the **Stack** instead of the Heap, drastically reducing GC pressure. Synchronization might also be removed (Lock Elision).
+
+---
+[⬅ Back to Interview Roadmap](../README.md)

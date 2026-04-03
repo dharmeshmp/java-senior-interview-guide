@@ -1,59 +1,30 @@
-# 03 - Java Collections Framework
+# 03 - Collections API Deep Dive
 
-The Collections framework provides a standardized way to store and manipulate groups of objects.
-
----
-
-## 🏗 The Core Interfaces
-- **List**: An ordered collection that allows duplicate elements.
-- **Set**: A collection of unique elements.
-- **Map**: A key-value pair collection.
-
-### 🖇 List
-```java
-List<String> fruits = new ArrayList<>();
-fruits.add("Apple");
-fruits.add("Banana");
-fruits.add("Apple"); // Duplicates allowed
-```
-
-### 🖇 Set
-```java
-Set<Integer> uniqueNumbers = new HashSet<>();
-uniqueNumbers.add(10);
-uniqueNumbers.add(20);
-uniqueNumbers.add(10); // Duplicate will be ignored
-```
-
-### 🖇 Map
-```java
-Map<String, String> capitalMap = new HashMap<>();
-capitalMap.put("USA", "Washington D.C.");
-capitalMap.put("India", "New Delhi");
-```
-
-## 🧩 Generics
-Generics make code type-safe and more robust.
-```java
-// Without Generics (Can lead to Runtime errors)
-List numbers = new ArrayList();
-numbers.add(1);
-numbers.add("Not a number");
-
-// With Generics
-List<Integer> intList = new ArrayList<>();
-intList.add(1);
-// intList.add("String"); // Compile-time error!
-```
-
-## 🔁 Iterators
-Used to traverse a collection of objects one by one.
-```java
-Iterator<String> it = fruits.iterator();
-while (it.hasNext()) {
-    System.out.println(it.next());
-}
-```
+A senior Java developer must know exactly what happens inside data structures during high concurrency, resizing, and iterations.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+
+## 🏗 HashMap Internals
+A `HashMap` uses an Array of Nodes (`Map.Entry`).
+- **Hashing**: Computes `hash(key) ^ (hash(key) >>> 16)` to minimize collisions, then assigns a bucket via bitmasking: `(n - 1) & hash`.
+- **Treeification (Java 8)**: To defend against hash collision attacks (DoS), when a bucket has more than `TREEIFY_THRESHOLD` (8) items and the array length is $\ge$ 64, the linked list is converted to a Red-Black Tree. This drops lookup time from $O(N)$ to $O(\log N)$.
+- **Load Factor & Resizing**: Default load factor is `0.75`. When entries exceed capacity * load factor, it doubles the array size and rehashes all elements.
+
+## 🏗 Concurrent Collections
+### `ConcurrentHashMap`
+- **Java 7 vs Java 8**: Java 7 used Segment Locking (array of segments, locking a specific part). Java 8 abandoned segments. It uses the `Node` array and locks only the specific bucket's head node using `synchronized` and `Compare-And-Swap (CAS)` operations, allowing massive concurrent writes.
+
+### `CopyOnWriteArrayList`
+- Useful for read-heavy operations where writes are rare (e.g., Listener lists).
+- On every write/add/remove, the entire underlying array is copied. This guarantees thread-safety without explicit locking during reads.
+
+## 🏗 Fail-Fast vs Fail-Safe Iterators
+- **Fail-Fast** (e.g., `ArrayList`, `HashMap`): Uses a `modCount` variable. If the collection is structurally modified during iteration via a different thread/iterator, it throws `ConcurrentModificationException`.
+- **Fail-Safe** (e.g., `ConcurrentHashMap`, `CopyOnWriteArrayList`): Iterates over a clone or weakly consistent view of the collection. It will not throw `ConcurrentModificationException` and allows modifications during iteration.
+
+### Interview Question
+*When would you use `TreeMap` over `HashMap`?*
+Use `TreeMap` when you need keys sorted in a specific order (NavigableMap/SortedMap). However, operations are $O(\log N)$ instead of $O(1)$.
+
+---
+[⬅ Back to Interview Roadmap](../README.md)

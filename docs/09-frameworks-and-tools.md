@@ -1,57 +1,38 @@
-# 09 - Frameworks & Java Tools
+# 09 - Enterprise Frameworks (Spring Architecture)
 
-After mastering core Java, developer tool knowledge is essential for real-world applications.
-
----
-
-## 🏗 Maven & Gradle (Build Tools)
-Build tools automate dependency management and project lifecycle management.
-
-### 🖇 Maven (`pom.xml`)
-A XML-based configuration tool for managing dependencies.
-```xml
-<dependencies>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>3.0.0</version>
-    </dependency>
-</dependencies>
-```
-
-### 🖇 Gradle (`build.gradle`)
-A Groovy or Kotlin DSL-based build tool.
-```groovy
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-}
-```
-
-## 🏗 Spring Boot (Modern Enterprise Framework)
-Spring Boot provides the fastest way to build standalone, production-grade applications.
-```java
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class MyApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(MyApplication.class, args);
-    }
-}
-```
-
-## 🏗 Hibernate (ORM)
-Hibernate maps Java objects to relational database tables.
-```java
-@Entity
-@Table(name = "Users")
-public class User {
-    @Id
-    private Long id;
-    private String name;
-}
-```
+Most senior Java roles require deep expertise in Spring internals, not just knowing the annotations.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+
+## 🏗 Spring Container: BeanFactory vs ApplicationContext
+- `BeanFactory`: Basic DI container. Beans are lazily instantiated.
+- `ApplicationContext`: Advanced container. Eagerly instantiates Singletons at startup. Provides Event Publishing, AOP, and i18n.
+
+## 🏗 Spring Bean Lifecycle
+1. Instantiate bean object.
+2. Populate properties (Dependency Injection).
+3. `BeanNameAware`, `BeanFactoryAware`.
+4. `BeanPostProcessor.postProcessBeforeInitialization` (Custom logic).
+5. `@PostConstruct` / `afterPropertiesSet()`.
+6. `BeanPostProcessor.postProcessAfterInitialization` (Where AOP proxies are actually created).
+7. Bean is ready for use.
+8. `@PreDestroy` / `destroy()`.
+
+## 🏗 Spring Boot Auto-Configuration Magic
+Spring Boot works via `@EnableAutoConfiguration` (included in `@SpringBootApplication`).
+- It uses `spring.factories` or `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
+- Checks the classpath for conditions using `@ConditionalOnClass`, `@ConditionalOnMissingBean`. If Tomcat is on the classpath, it sets up an Embedded Tomcat.
+
+## 🏗 AOP (Aspect-Oriented Programming)
+Used for cross-cutting concerns (Logging, Security, Transactions).
+- Spring AOP uses **Dynamic Proxies**.
+- If a class implements an interface, Spring uses **JDK Dynamic Proxies**.
+- If a class has no interface, Spring uses **CGLIB** to subclass the actual class.
+
+### Interview Question
+*What happens if you inject a Prototype bean into a Singleton bean?*
+The Prototype bean is only instantiated *once* during the Singleton's creation. Every request to the Singleton will use the exact same instance of the Prototype bean, defeating its purpose.
+**Fix**: Use `@Lookup` on a method, or inject `ObjectFactory<MyPrototypeBean>`.
+
+---
+[⬅ Back to Interview Roadmap](../README.md)

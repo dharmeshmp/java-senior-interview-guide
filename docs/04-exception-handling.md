@@ -1,60 +1,40 @@
-# 04 - Exception Handling
+# 04 - Exception Handling at Scale
 
-Exceptions are unforeseen events that occur during program execution, interrupting the normal flow.
+For enterprise applications, exceptions must be handled efficiently, comprehensively, and gracefully to prevent data corruption and resource leaks.
 
 ---
 
-## 🏗 Basics of Exception Handling
-A `try-catch` block is used to handle exceptions.
+## 🏗 The Performance Cost of Exceptions
+Generating an exception is extremely slow in Java.
+- **Why?**: The method `Throwable.fillInStackTrace()` must walk the execution stack to build the stack trace.
+- **Optimization**: If utilizing exceptions for business logic (which is generally an anti-pattern), you can override `fillInStackTrace()` to return `this` for custom exceptions without stack trace gathering.
 
+## 🏗 Try-With-Resources & Suppressed Exceptions
+Introduced in Java 7, `try-with-resources` ensures `AutoCloseable` resources are closed automatically.
+- **Suppressed Exceptions**: If an exception occurs in the `try` block, and closing the resource also throws an exception, the original exception is preserved, and the closing exception is added as a "Suppressed Exception".
+  
 ```java
-try {
-    int num = 10 / 0; // ArithmeticException
-} catch (ArithmeticException e) {
-    System.out.println("Error: " + e.getMessage());
-} finally {
-    System.out.println("Finally block always executes.");
-}
-```
-
-## 🏗 Multiple Catch Blocks
-Catching different types of exceptions.
-```java
-try {
-    int[] arr = {1, 2, 3};
-    System.out.println(arr[5]); // ArrayIndexOutOfBoundsException
-} catch (ArithmeticException e) {
-    System.out.println("Arithmetic error");
-} catch (ArrayIndexOutOfBoundsException e) {
-    System.out.println("Array index error");
-} catch (Exception e) {
-    System.out.println("General exception");
-}
-```
-
-## 🧩 Throw & Throws Keywords
-- **throw**: Used to throw an exception explicitly.
-- **throws**: Used in a method signature to declare exceptions it might throw.
-
-```java
-public void checkValidAge(int age) throws Exception {
-    if (age < 18) {
-        throw new Exception("Age not valid for voting!");
-    } else {
-        System.out.println("Age valid!");
+try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+    return br.readLine();
+} catch (IOException e) {
+    for (Throwable supp : e.getSuppressed()) {
+        System.out.println(supp);
     }
 }
 ```
 
-## 🛠 Custom Exceptions
-You can create your own exception class by extending `Exception`.
-```java
-class InvalidUserException extends Exception {
-    public InvalidUserException(String message) {
-        super(message);
-    }
-}
-```
+## 🏗 Exception Handling in Distributed Systems (Spring)
+Never leak stack traces or raw database exceptions to the client API response (security risk).
+- Use `@ControllerAdvice` or `@RestControllerAdvice` in Spring to intercept all application exceptions globally.
+- Standardize Error Responses (e.g., `ProblemDetail` or RFC 7807 specs).
+
+## 🏗 Exceptions in Functional Paradigms (Java 8 Streams)
+Lambdas do not play nicely with checked exceptions because functional interfaces like `Consumer` and `Function` do not declare `throws`.
+- **Solution**: Wrap checked exceptions in `RuntimeException` within the lambda, or use a utility like "Sneaky Throws" (Lombok) or write a custom functional interface wrapper.
+
+### Interview Question
+*What is the difference between `Error` and `Exception`?*
+Both inherit from `Throwable`. `Error` represents severe system-level problems (e.g., `OutOfMemoryError`, `StackOverflowError`) that the application typically should not catch. `Exception` represents conditions that a reasonable application might want to catch and recover from.
 
 ---
-[⬅ Back to Roadmap](../README.md)
+[⬅ Back to Interview Roadmap](../README.md)
