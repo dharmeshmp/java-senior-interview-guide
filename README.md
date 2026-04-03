@@ -60,12 +60,19 @@ Welcome to the Senior Java Developer Interview Guide. This repository is specifi
 *   Hibernate N+1 Problem & Fetch Strategies
 *   1st & 2nd Level Cache (Ehcache, Redis)
 
-### [10. Distributed Systems & Microservices](./docs/10-web-dev.md)
+### [10. Web Development & API Design](./docs/10-web-dev.md)
 *   Monolith vs Microservices Trade-offs
-*   Saga Pattern, CQRS, and Event Sourcing
-*   Circuit Breakers, Bulkheads, and Retry strategies (Resilience4j)
-*   Distributed Tracing & Centralized Logging (ELK, Zipkin)
-*   API Gateway & Rate Limiting algorithms
+*   Synchronous vs Asynchronous Communication
+*   REST vs gRPC vs GraphQL
+*   Idempotency & Rate Limiting algorithms
+*   Security (JWT, OAuth2)
+
+### [11. Microservices Architecture & Design Patterns](./docs/11-microservices.md)
+*   Strangler Fig & Sidecar Patterns
+*   Saga, Outbox, and Event Sourcing (Distributed Transactions)
+*   CQRS (Command Query Responsibility Segregation)
+*   Circuit Breakers, Bulkheads, and Resiliency
+*   Observability (Distributed Tracing, ELK)
 
 ---
 
