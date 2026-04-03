@@ -18,6 +18,40 @@ A `HashMap` uses an Array of Nodes (`Map.Entry`).
 - Useful for read-heavy operations where writes are rare (e.g., Listener lists).
 - On every write/add/remove, the entire underlying array is copied. This guarantees thread-safety without explicit locking during reads.
 
+## 🏗 Comparable vs Comparator
+Both interfaces are used to sort collections, but their design purposes and use-cases are fundamentally different.
+
+### 1. `Comparable` (java.lang)
+Modifies the class itself to define its **natural ordering**. You implement `Comparable<T>` on the class itself and override `compareTo(T obj)`.
+- **Limitation**: You can only sort by one property (e.g., sort `Employee` by ID). If you don't own the source code of the class, you cannot use Comparable.
+```java
+class Employee implements Comparable<Employee> {
+    int id; String name;
+    
+    // Sort by ID naturally
+    @Override
+    public int compareTo(Employee other) {
+        return Integer.compare(this.id, other.id);
+    }
+}
+// Usage
+Collections.sort(employeeList);
+```
+
+### 2. `Comparator` (java.util)
+Defines a **custom ordering** completely external to the class. You implement `Comparator<T>` by overriding `compare(T obj1, T obj2)`.
+- **Advantage**: Highly flexible. You can have multiple logic to sort (by Salary, by Name, or by Age) and easily pass them to `Collections.sort()` without modifying the `Employee` class.
+```java
+class Employee { int id; String name; int salary; }
+
+// Usage with Java 8 Lambdas
+Comparator<Employee> byName = (e1, e2) -> e1.name.compareTo(e2.name);
+Collections.sort(employeeList, byName);
+
+// Usage with Method References (Cleaner)
+Collections.sort(employeeList, Comparator.comparing(Employee::getSalary));
+```
+
 ## 🏗 Fail-Fast vs Fail-Safe Iterators
 - **Fail-Fast** (e.g., `ArrayList`, `HashMap`): Uses a `modCount` variable. If the collection is structurally modified during iteration via a different thread/iterator, it throws `ConcurrentModificationException`.
 - **Fail-Safe** (e.g., `ConcurrentHashMap`, `CopyOnWriteArrayList`): Iterates over a clone or weakly consistent view of the collection. It will not throw `ConcurrentModificationException` and allows modifications during iteration.
@@ -54,12 +88,6 @@ Map<String, Integer> sortedMap = map.entrySet()
 **Q6: When would you use `TreeMap` over `HashMap`?**
 Use `TreeMap` when you need keys sorted in a specific natural or custom order (NavigableMap/SortedMap). However, operations are $O(\log N)$ instead of $O(1)$.
 
-**Q7: `Comparable` vs `Comparator`?**
-They are both used to sort collections, but their design purposes are different:
-- **`Comparable (java.lang)`**: Modifies the class itself to define its **natural ordering**. You implement `Comparable<T>` on the class itself and override `compareTo(T obj)`.
-  - *Limitation*: You can only sort by one property (e.g., sort `Employee` by ID). If you don't own the source code of the class, you cannot use Comparable.
-- **`Comparator (java.util)`**: Defines a **custom ordering** completely external to the class. You implement `Comparator<T>` in a separate class or as a lambda/method reference and override `compare(T obj1, T obj2)`.
-  - *Advantage*: You can have multiple logic to sort (e.g., sort `Employee` by Salary, by Name, or by Age) and easily pass them to `Collections.sort(list, comparator)`.
 
 ---
 [⬅ Back to Interview Roadmap](../README.md)
