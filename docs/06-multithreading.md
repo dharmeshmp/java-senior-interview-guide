@@ -48,6 +48,10 @@ Deadlock occurs when two or more threads hold locks and wait for locks held by o
 - **`Future` (Java 5)**: Represents the result of an asynchronous computation, but it is heavily limited. To get the result, you must call `.get()`, which **blocks** the calling thread until the computation is done. You also cannot chain multiple Futures together or handle exceptions elegantly.
 - **`CompletableFuture` (Java 8)**: An extension of `Future` that supports completely **non-blocking** asynchronous, event-driven programming. You can attach callbacks (`thenApply`, `thenAccept`) to be executed automatically when the task completes. You can also easily combine multiple futures (`thenCombine`, `allOf`) and handle exceptions asynchronously (`exceptionally`, `handle`).
 
+**Q4: What is the difference between `Runnable` and `Callable`?**
+- **`Runnable` (Java 1.0)**: Represents a task that does not return a result and cannot throw a checked exception. Its single method is `void run()`.
+- **`Callable` (Java 5)**: Represents a task that *does* return a result and *can* throw a checked exception. Its single method is `V call() throws Exception`. It is typically used with an `ExecutorService` which returns a `Future` containing the result of the `Callable`.
+
 
 ---
 [⬅ Back to Interview Roadmap](../README.md)
