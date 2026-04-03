@@ -33,6 +33,25 @@ Java provides four primary functional interfaces that form the backbone of the S
 
 *(Note: There are also `Bi` variants like `BiFunction<T, U, R>`, `BiPredicate<T, U>`, and primitive specializations like `IntFunction`, `DoubleSupplier` to avoid auto-boxing overhead).*
 
+### Creating Custom Functional Interfaces
+You can define your own Functional Interface by declaring an interface with **exactly one abstract method**. While the `@FunctionalInterface` annotation is optional, it is highly recommended as it acts as a compiler safeguard (it will throw a compilation error if you accidentally add a second abstract method).
+
+```java
+@FunctionalInterface
+public interface StringFormatter {
+    // Exactly one abstract method
+    String format(String input);
+
+    // Can have multiple default or static methods
+    default void printFormatted(String input) {
+        System.out.println(format(input));
+    }
+}
+
+// Usage with Lambda:
+StringFormatter upperCaseFormatter = (str) -> str.toUpperCase();
+upperCaseFormatter.printFormatted("hello"); // Prints: HELLO
+```
 
 ## 🏗 Stream API Internals
 - **Lazy Evaluation**: Intermediate operations (`filter`, `map`) do not execute until a terminal operation (`collect`, `count`) is invoked.
