@@ -32,10 +32,18 @@ Heavyweight OS threads limit the "One-Thread-Per-Request" model.
 - Millions can run simultaneously. They "unmount" from the carrier OS thread during blocking I/O.
 - Usage: `Executors.newVirtualThreadPerTaskExecutor()`.
 
-### Interview Question
-*What is a Deadlock and how do you prevent it?*
+### Interview Questions
+**Q1: How do you create a thread in Java, and which method is better?**
+In Java, you create a thread either by **extending the `Thread` class** or by **implementing the `Runnable` interface** (or passing a lambda).
+- **Which is better?** Implementing `Runnable` is substantially better. 
+  1. Java does not support multiple inheritance, so extending `Thread` severely limits your class design.
+  2. Implementations of `Runnable` can be easily shared or passed to Thread Pools (`ExecutorService`), whereas `Thread` extensions couple the thread management directly with the task logic.
+  3. Conceptually, a task (`Runnable`) is not a "kind of" thread; it's work *executed* by a thread.
+
+**Q2: What is a Deadlock and how do you prevent it?**
 Deadlock occurs when two or more threads hold locks and wait for locks held by others, forming a dependency cycle.
 **Prevention**: Always acquire locks in a consistent global order across all threads. Use timeouts (`tryLock(time)` from `ReentrantLock`).
+
 
 ---
 [⬅ Back to Interview Roadmap](../README.md)
