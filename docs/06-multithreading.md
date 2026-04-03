@@ -44,6 +44,10 @@ In Java, you create a thread either by **extending the `Thread` class** or by **
 Deadlock occurs when two or more threads hold locks and wait for locks held by others, forming a dependency cycle.
 **Prevention**: Always acquire locks in a consistent global order across all threads. Use timeouts (`tryLock(time)` from `ReentrantLock`).
 
+**Q3: What is the difference between `Future` and `CompletableFuture`?**
+- **`Future` (Java 5)**: Represents the result of an asynchronous computation, but it is heavily limited. To get the result, you must call `.get()`, which **blocks** the calling thread until the computation is done. You also cannot chain multiple Futures together or handle exceptions elegantly.
+- **`CompletableFuture` (Java 8)**: An extension of `Future` that supports completely **non-blocking** asynchronous, event-driven programming. You can attach callbacks (`thenApply`, `thenAccept`) to be executed automatically when the task completes. You can also easily combine multiple futures (`thenCombine`, `allOf`) and handle exceptions asynchronously (`exceptionally`, `handle`).
+
 
 ---
 [⬅ Back to Interview Roadmap](../README.md)
