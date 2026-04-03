@@ -54,5 +54,12 @@ Map<String, Integer> sortedMap = map.entrySet()
 **Q6: When would you use `TreeMap` over `HashMap`?**
 Use `TreeMap` when you need keys sorted in a specific natural or custom order (NavigableMap/SortedMap). However, operations are $O(\log N)$ instead of $O(1)$.
 
+**Q7: `Comparable` vs `Comparator`?**
+They are both used to sort collections, but their design purposes are different:
+- **`Comparable (java.lang)`**: Modifies the class itself to define its **natural ordering**. You implement `Comparable<T>` on the class itself and override `compareTo(T obj)`.
+  - *Limitation*: You can only sort by one property (e.g., sort `Employee` by ID). If you don't own the source code of the class, you cannot use Comparable.
+- **`Comparator (java.util)`**: Defines a **custom ordering** completely external to the class. You implement `Comparator<T>` in a separate class or as a lambda/method reference and override `compare(T obj1, T obj2)`.
+  - *Advantage*: You can have multiple logic to sort (e.g., sort `Employee` by Salary, by Name, or by Age) and easily pass them to `Collections.sort(list, comparator)`.
+
 ---
 [⬅ Back to Interview Roadmap](../README.md)
