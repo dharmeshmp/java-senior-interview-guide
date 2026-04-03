@@ -4,6 +4,36 @@ For 5-10 years of experience, using Streams is basic. Understanding their lazy e
 
 ---
 
+## 🏗 Functional Programming in Java
+Historically, Java was strictly an Imperative / Object-Oriented language (focusing on *how* to do things using mutable state and loops). 
+With Java 8, Java embraced **Declarative / Functional** paradigms (focusing on *what* to do, treating functions as first-class citizens, and minimizing mutable state).
+
+### Built-in Core Functional Interfaces (`java.util.function`)
+Java provides four primary functional interfaces that form the backbone of the Stream API and lambda expressions:
+
+1. **`Predicate<T>`**
+   - **Signature**: `boolean test(T t);`
+   - **Usage**: Used for evaluating a condition (e.g., filtering a list).
+   - **Example**: `Predicate<String> isLong = s -> s.length() > 5;`
+
+2. **`Function<T, R>`**
+   - **Signature**: `R apply(T t);`
+   - **Usage**: Transforms or maps an input to an output.
+   - **Example**: `Function<String, Integer> stringLength = s -> s.length();`
+
+3. **`Consumer<T>`**
+   - **Signature**: `void accept(T t);`
+   - **Usage**: Takes an argument and produces a side-effect (no return value).
+   - **Example**: `Consumer<String> printer = s -> System.out.println(s);`
+
+4. **`Supplier<T>`**
+   - **Signature**: `T get();`
+   - **Usage**: Takes no arguments but generates or supplies a value (great for lazy evaluation).
+   - **Example**: `Supplier<Double> randomValue = () -> Math.random();`
+
+*(Note: There are also `Bi` variants like `BiFunction<T, U, R>`, `BiPredicate<T, U>`, and primitive specializations like `IntFunction`, `DoubleSupplier` to avoid auto-boxing overhead).*
+
+
 ## 🏗 Stream API Internals
 - **Lazy Evaluation**: Intermediate operations (`filter`, `map`) do not execute until a terminal operation (`collect`, `count`) is invoked.
 - **Pipeline Processing**: Elements are processed vertically down the pipeline. If `limit(1)` is met, the rest of the stream is not processed (Short-circuiting).
