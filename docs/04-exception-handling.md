@@ -123,5 +123,18 @@ The exception thrown in the `fully` block will swallow and hide the exception th
 **Q5: Can you catch `OutOfMemoryError`? Should you?**
 Yes, you *can* catch it because it extends `Throwable`. However, you **should not**. Once an OOM is thrown, JVM integrity is compromised. Even attempting to run the `catch` block might trigger another OOM as you require memory to allocate the exception variables.
 
+**Q6: What are the rules for Exceptions in Method Overriding?**
+- **Unchecked Exceptions**: A subclass overriding a method can throw *any* Unchecked Exception (`RuntimeException`), regardless of what the superclass method declares.
+- **Checked Exceptions**: 
+  - If the superclass method does **not** declare any checked exception, the subclass overriding method **cannot** declare any checked exception.
+  - If the superclass method **does** declare a checked exception, the subclass method can declare:
+    1. No exception at all.
+    2. The exact same exception.
+    3. A child/subclass of the superclass exception.
+  - **TRAP**: The subclass *cannot* declare a broader (parent) checked exception or a completely new, unrelated checked exception.
+
+**Q7: What are the rules for Exceptions in Method Overloading?**
+- Method overloading is based entirely on the method signature (name and parameters). The `throws` clause does not play any role in method resolution. Changing the thrown exception type while keeping the same parameters does *not* create an overloaded method; it creates a compile-time collision error.
+
 ---
 [⬅ Back to Interview Roadmap](../README.md)
