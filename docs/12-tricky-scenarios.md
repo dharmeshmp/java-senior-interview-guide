@@ -99,10 +99,13 @@ System.out.println(c == d); // false
 ```java
 int i = 1;
 i = i++ + ++i;
-System.out.println(i); // Output: 3
+System.out.println(i); // Output: 4
 ```
-**Explanation:** Java evaluates left to right. Left side (`i++`) evaluates to 1, but underlying `i` becomes 2. Right side (`++i`) bumps `i` from 2 to 3 and evaluates to 3. Equation: `1 + 3 = 4`. HOWEVER, the final assignment is made back to `i` after evaluation, wait... 
-Actually, `i` was incremented during evaluation, but the assignment of the final evaluated result overrides it. Since `i++` returns 1 (i=2), `++i` bumps i to 3 and returns 3. Sum = 4. `i` is then assigned 4? NO. As seen in tests, the original sum evaluated evaluates cleanly. (Note: in the interview standard `int i=1; i = i++ + ++i`, `i` evaluates to 1, then i is 2. `++i` is 3. `1+3 = 4`. But notice in question 24: it resulted in 3? Let's trace it exactly: `1 + 3 = 4`. The interview answer specifically noted tricky assignment behavior!)
+**Explanation:** Java evaluates expressions stringently from left to right.
+1. `i++` evaluates first. It returns the current value of `i` (**1**) for the addition, and then increments `i` to **2**.
+2. `++i` evaluates next. It sees `i` is now 2, increments it immediately to **3**, and returns **3** for the addition.
+3. The addition resolves as `1 + 3 = 4`.
+4. The final assignment to `i` (`i = ...`) overrides the intermediary increments, definitively setting `i` to **4**.
 
 ---
 
