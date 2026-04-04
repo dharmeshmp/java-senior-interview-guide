@@ -74,6 +74,13 @@ Welcome to the Senior Java Developer Interview Guide. This repository is specifi
 *   Circuit Breakers, Bulkheads, and Resiliency
 *   Observability (Distributed Tracing, ELK)
 
+### [12. Tricky Interview Scenarios & Edge Cases](./docs/12-tricky-scenarios.md)
+*   Compile-time vs Runtime (`==` vs `.equals`, Method Overloading)
+*   String Pool and Immutability Quicksand
+*   `try-catch-finally` and JVM Termination behavior
+*   List `#remove(int)` vs `#remove(Object)` and Collection Traps
+*   Class Initialization execution order
+
 ---
 
 ## 💡 System Design Questions
