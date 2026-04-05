@@ -4,6 +4,50 @@ At a senior level, OOP isn't just about inheritance; it's about robust API desig
 
 ---
 
+## 🏛 The 4 Pillars of OOP
+At a senior level, these aren't just definitions; they are design choices with trade-offs.
+
+### 1. Encapsulation (Data Hiding)
+*   **Definition:** Bundling data (fields) and methods that operate on that data into a single unit (class) while restricting direct access to some of the object's components.
+*   **Senior View:** It's about protecting the **invariants** of your object. By making fields private and using methods, you ensure the object never enters an invalid state.
+    ```java
+    class BankAccount {
+        private double balance; // Hidden internal state
+        public void deposit(double amount) {
+            if (amount > 0) balance += amount; // Logic protecting the state
+        }
+    }
+    ```
+
+### 2. Abstraction (Complexity Hiding)
+*   **Definition:** Hiding the implementation details and showing only the functionality to the users.
+*   **Senior View:** Using interfaces and abstract classes to define a contract. This reduces coupling and makes your system modular.
+    ```java
+    interface PaymentProcessor { void process(double amount); } // What it does, not how
+    class StripeProcessor implements PaymentProcessor { ... } // How it does it
+    ```
+
+### 3. Inheritance (Reusability)
+*   **Definition:** A mechanism where one class acquires the properties and behaviors of a parent class.
+*   **Senior View:** Inheritance is "is-a" relationship. Often overused; remember **LSP** (Liskov Substitution) and favor composition if the relationship is not strictly hierarchical.
+    ```java
+    class Employee { ... }
+    class Engineer extends Employee { ... } // Engineer is-a Employee
+    ```
+
+### 4. Polymorphism (Multiple Forms)
+*   **Definition:** The ability of an object to take on many forms.
+*   **Types:**
+    *   **Compile-time (Overloading):** Same method name, different parameters in the same class.
+    *   **Runtime (Overriding):** Subclass provides a specific implementation of a method already defined in its parent class.
+*   **Senior View:** Runtime polymorphism is the engine behind many design patterns (like Strategy and Proxy).
+    ```java
+    List<Shape> shapes = List.of(new Circle(), new Square());
+    shapes.forEach(Shape::draw); // Dynamic Dispatch: Calls the correct draw() at runtime
+    ```
+
+---
+
 ## 🏗 SOLID Principles (Deep Dive)
 
 ### 1. Single Responsibility Principle (SRP)
