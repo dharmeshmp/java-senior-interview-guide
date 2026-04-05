@@ -65,6 +65,34 @@ spring.jpa.hibernate.ddl-auto=validate     # Essential for Prod! Never use 'upda
 management.endpoints.web.exposure.include=health,info,metrics
 ```
 
+## 🏗 Maven Build Lifecycle (The Standard)
+Every senior Java developer must understand how Maven builds, packages, and manages dependencies.
+
+### The 3 Built-in Lifecycles:
+1.  **default**: Handles project deployment (the main build).
+2.  **clean**: Handles project cleaning (removing the `target` folder).
+3.  **site**: Handles the creation of the project's site documentation.
+
+### The Default Lifecycle (Key Phases):
+When you run a phase, Maven executes **all preceding phases** in that lifecycle.
+
+*   **`validate`**: Checks if the project is correct and all necessary information is available.
+*   **`compile`**: Compiles the source code (`.java` → `.class`).
+*   **`test`**: Runs unit tests (e.g., JUnit/TestNG). Does **not** require packaging.
+*   **`package`**: Takes the compiled code and packages it in its distributable format (JAR/WAR).
+*   **`verify`**: Runs integration tests to ensure quality criteria are met.
+*   **`install`**: Installs the package into your **local repository** (`~/.m2/repository`) so it can be used as a dependency in other local projects.
+*   **`deploy`**: Copies the final package to a **remote repository** (like Nexus or Artifactory) for sharing with the team.
+
+### Maven Dependency Scopes:
+*   **`compile`**: (Default) Available everywhere (classpath, tests, runtime).
+*   **`provided`**: Provided by the JDK or a container (e.g., `servlet-api` provided by Tomcat).
+*   **`runtime`**: Not needed for compilation, but needed for execution (e.g., JDBC drivers).
+*   **`test`**: Only available for test compilation and execution.
+*   **`system`**: Similar to provided, but you must provide an explicit path to the JAR (Avoid this!).
+
+---
+
 ### Interview Questions
 **Q1: What happens if you inject a Prototype bean into a Singleton bean?**
 The Prototype bean is only instantiated *once* during the Singleton's creation. Every request to the Singleton will use the exact same instance of the Prototype bean, defeating its purpose.
